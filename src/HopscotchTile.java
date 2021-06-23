@@ -12,8 +12,8 @@ public class HopscotchTile {
         this.num = num;
         this.row = row;
         this.col = col;
-        this.xpos = (HopscotchGUI.getTileSide() * row) + (HopscotchGUI.getSideBuffer() * row);
-        this.ypos = (HopscotchGUI.getTileSide() * col) + (HopscotchGUI.getSideBuffer() * col);
+        this.xpos = (HopscotchGUI.getTileSide() * row);
+        this.ypos = (HopscotchGUI.getTileSide() * col);
     }
 
 

@@ -15,9 +15,9 @@ public final class HopscotchGUI extends JPanel implements MouseListener {
     // trying to recreate colors from worksheet
     private static final Color DARK_BLUE = new Color(9, 90, 166);
     private static final int tileSide = 70;
-    private static final int sideBuffer = 5;
-    private static final int frameWidth = 305;
-    private static final int frameHeight = 333;
+    private static final int frameWidth = 281;
+    private static final int frameHeight = 309;
+    private static final int frameTitleHeight = 28;
 
     int oldCol;
     int oldRow;
@@ -33,10 +33,6 @@ public final class HopscotchGUI extends JPanel implements MouseListener {
 
     public static int getTileSide() {
         return tileSide;
-    }
-
-    public static int getSideBuffer() {
-        return sideBuffer;
     }
 
     private ArrayList<HopscotchTile> tiles = initializeTiles();
@@ -70,9 +66,8 @@ public final class HopscotchGUI extends JPanel implements MouseListener {
         // only left clicks count
         if (e.getButton() == 1) {
 
-            //todo: there is probably a better way to determine this
-            oldCol = e.getX() / (tileSide + sideBuffer);
-            oldRow = e.getY() / (tileSide + sideBuffer);
+            oldCol = e.getX() / (tileSide);
+            oldRow = e.getY() / (tileSide);
 
             // confirm validity of the move
             if (e.getX() < 0 || e.getX() > frameHeight || e.getY() < 0 || e.getY() > frameHeight) {
@@ -121,21 +116,6 @@ public final class HopscotchGUI extends JPanel implements MouseListener {
     public void mouseExited(MouseEvent e) {
     }
 
-    // this does not seem to be necessary any more
-        /*private boolean validMove(int x, int y, HopscotchTile t, String[] dir) {
-
-            // does the cursor move outside of the frame?
-            if (x < 0 || x > frameHeight || y < 0 || y > frameHeight) {
-                System.out.println("cursor out of bounds");
-                return false;
-            }
-
-            //did the cursor move on the blank tile?
-             if (t.getRow() == oldRow && t.getRow() == blankTileRow || t.getCol() == oldCol && t.getCol() == blankTileCol) {
-                return true;
-            }
-            return false;
-        }*/
 
     //change tiles in list, then move them on screen
     //Multithreading does not seem necessary here. But maybe add a r/w lock until movement is done
@@ -193,16 +173,17 @@ public final class HopscotchGUI extends JPanel implements MouseListener {
                 blankTile = t;
                 continue;
             }
-            mydraw.fillRect(t.getXpos() + sideBuffer, t.getYpos() + sideBuffer, tileSide, tileSide);
+            mydraw.fillRect(t.getXpos(), t.getYpos(), tileSide, tileSide);
             mydraw.setColor(WHITE);
+            mydraw.drawRect(t.getXpos(), t.getYpos(), tileSide, tileSide);
             mydraw.setFont(new Font("Arial", Font.BOLD, 35));
 
             //credits for the following part of the code go to Gilbert LeBlanc on Stackoverflow
             // https://stackoverflow.com/questions/14284754/java-center-text-in-rectangle/14284949
             FontMetrics fm = mydraw.getFontMetrics();
             Rectangle2D r = fm.getStringBounds(t.getNum(), mydraw);
-            int x = t.getXpos() + (tileSide + sideBuffer - (int) r.getWidth()) / 2;
-            int y = t.getYpos() + (tileSide + sideBuffer - (int) r.getHeight()) / 2 + fm.getAscent();
+            int x = t.getXpos() + (tileSide - (int) r.getWidth()) / 2;
+            int y = t.getYpos() + (tileSide - (int) r.getHeight()) / 2 + fm.getAscent();
             g.drawString(t.getNum(), x, y);
         }
     }
