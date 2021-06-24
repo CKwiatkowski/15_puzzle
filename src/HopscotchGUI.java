@@ -6,29 +6,22 @@ import java.util.Arrays;
 import javax.swing.*;
 import java.util.Collections;
 import java.util.ArrayList;
-
 import static java.awt.Color.WHITE;
-
 
 public final class HopscotchGUI extends JPanel implements MouseListener {
 
-    // trying to recreate colors from worksheet
     private static final Color DARK_BLUE = new Color(9, 90, 166);
     private static final int tileSide = 70;
     private static final int frameWidth = 281;
     private static final int frameHeight = 309;
     private static final int frameTitleHeight = 28;
 
-    int oldCol;
-    int oldRow;
-    char direction;
+    private int oldCol;
+    private int oldRow;
+    private char direction;
 
-    public static int getFrameWidth() {
-        return frameWidth;
-    }
-
-    public static int getFrameHeight() {
-        return frameHeight;
+    private static int getFrameTitleHeight() {
+        return frameTitleHeight;
     }
 
     public static int getTileSide() {
@@ -37,7 +30,7 @@ public final class HopscotchGUI extends JPanel implements MouseListener {
 
     private ArrayList<HopscotchTile> tiles = initializeTiles();
 
-    private HopscotchTile blankTile;
+    private HopscotchTile blankTile = tiles.get(15);
 
     HopscotchGUI() {
         JFrame myframe = new JFrame("Hopscotch");
@@ -67,36 +60,36 @@ public final class HopscotchGUI extends JPanel implements MouseListener {
         if (e.getButton() == 1) {
 
             oldCol = e.getX() / (tileSide);
-            oldRow = e.getY() / (tileSide);
+            oldRow = (e.getY() - getFrameTitleHeight()) / (tileSide);
+
 
             // confirm validity of the move
             if (e.getX() < 0 || e.getX() > frameHeight || e.getY() < 0 || e.getY() > frameHeight) {
                 throw new IndexOutOfBoundsException("Clicked outside the game's frame");
             }
+
             if (blankTile.getRow() == oldRow) {
                 if (blankTile.getCol() < oldCol) {
                     direction = 'l';
                 } else if (blankTile.getCol() > oldCol) {
                     direction = 'r';
-                } else
-                    return;
-            }
-            if (blankTile.getCol() == oldCol) {
+                }
+            } else if (blankTile.getCol() == oldCol) {
                 if (blankTile.getRow() < oldRow) {
                     direction = 'u';
                 } else if (blankTile.getRow() > oldRow) {
                     direction = 'd';
-                } else
-                    return;
+                }
             } else if (oldCol < 0 || oldCol > 3 || oldRow < 0 || oldRow > 3) {
                 throw new IndexOutOfBoundsException("Invalid tile placement:");
-            }
+            } else
+                return;
             moveTiles(direction);
         }
     }
 
     @Override
-    // decided to leave this one empty - animating drag&drop is too much work for now. Maybe later.
+    // decided to leave this one empty for now
     public void mousePressed(MouseEvent e) {
 
     }
@@ -118,42 +111,75 @@ public final class HopscotchGUI extends JPanel implements MouseListener {
 
 
     //change tiles in list, then move them on screen
-    //Multithreading does not seem necessary here. But maybe add a r/w lock until movement is done
-    //catch errors if tiles move wrong?
     private void moveTiles(char direction) {
-        System.out.println("directions");
+        HopscotchTile tile;
         switch (direction) {
             case 'd':
-                System.out.println("down");
-                for (HopscotchTile t : tiles) {
-                    if (t.getRow() < blankTile.getRow() && t.getCol() == blankTile.getCol())
-                        t.setRow(t.getRow() + 1);
-                    System.out.print(t.getNum());
+                for (int i = tiles.size() - 1; i >= 0; --i) {
+                    //temporary variable
+                    tile = tiles.get(i);
+                    //update blank Tile if necessary
+                    blankCheck(tile);
+                    if (tile.getRow() >= oldRow && tile.getRow() < blankTile.getRow() && tile.getCol() == blankTile.getCol()) {
+                        int tempRow = tile.getRow();
+                        tile.setRow(blankTile.getRow());
+                        blankTile.setRow(tempRow);
+                        Collections.swap(tiles, i, tiles.indexOf(blankTile));
+                    }
                 }
                 break;
             case 'u':
-                for (HopscotchTile t : tiles) {
-                    if (t.getRow() > blankTile.getRow() && t.getCol() == blankTile.getCol())
-                        t.setRow(t.getRow() - 1);
-                }
-                break;
-            case 'r':
-                for (HopscotchTile t : tiles) {
-                    if (t.getCol() < blankTile.getCol() && t.getRow() == blankTile.getRow())
-                        t.setCol(t.getCol() + 1);
+                for (int i = tiles.size() - 1; i >= 0; --i) {
+                    tile = tiles.get(i);
+                    blankCheck(tile);
+                    if (tile.getRow() <= oldRow && tile.getRow() > blankTile.getRow() && tile.getCol() == blankTile.getCol()) {
+                        int tempRow = tile.getRow();
+                        tile.setRow(blankTile.getRow());
+                        blankTile.setRow(tempRow);
+                        Collections.swap(tiles, i, tiles.indexOf(blankTile));
+                    }
                 }
                 break;
             case 'l':
-                for (HopscotchTile t : tiles) {
-                    if (t.getCol() < blankTile.getCol() && t.getRow() == blankTile.getRow())
-                        t.setCol(t.getCol() + 1);
+                for (int i = tiles.size() - 1; i >= 0; --i) {
+                    tile = tiles.get(i);
+                    blankCheck(tile);
+                    if (tile.getCol() <= oldCol && tile.getCol() > blankTile.getCol() && tile.getRow() == blankTile.getRow()) {
+                        int tempCol = tile.getCol();
+                        tile.setCol(blankTile.getCol());
+                        blankTile.setCol(tempCol);
+                        Collections.swap(tiles, i, tiles.indexOf(blankTile));
+                    }
                 }
+
+                break;
+            case 'r':
+                for (int i = tiles.size() - 1; i >= 0; --i) {
+                    //temporary variable
+                    tile = tiles.get(i);
+                    //update blank Tile if necessary
+                    blankCheck(tile);
+                    if (tile.getCol() >= oldCol && tile.getCol() < blankTile.getCol() && tile.getRow() == blankTile.getRow()) {
+                        int tempCol = tile.getCol();
+                        tile.setCol(blankTile.getCol());
+                        blankTile.setCol(tempCol);
+                        Collections.swap(tiles, i, tiles.indexOf(blankTile));
+                    }
+                }
+
                 break;
             default:
                 throw new IllegalArgumentException("This is not a valid direction");
         }
-
         repaint();
+    }
+
+
+    private void blankCheck(HopscotchTile t) {
+        if (t.getNum().equals("0")) {
+            blankTile = t;
+            blankTile.setRow(t.getRow());
+        }
     }
 
     @Override
@@ -169,8 +195,9 @@ public final class HopscotchGUI extends JPanel implements MouseListener {
 
         for (HopscotchTile t : tiles) {
             mydraw.setColor(DARK_BLUE);
+            System.out.printf("Tile %s in row %d with pos %d/%d\n", t.getNum(), t.getRow(), t.getXpos(), t.getYpos());
             if (t.getNum().equals("0")) {
-                blankTile = t;
+                //blankTile = t;
                 continue;
             }
             mydraw.fillRect(t.getXpos(), t.getYpos(), tileSide, tileSide);

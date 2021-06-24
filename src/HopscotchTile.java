@@ -12,10 +12,9 @@ public class HopscotchTile {
         this.num = num;
         this.row = row;
         this.col = col;
-        this.xpos = (HopscotchGUI.getTileSide() * row);
-        this.ypos = (HopscotchGUI.getTileSide() * col);
+        this.xpos = (HopscotchGUI.getTileSide() * col);
+        this.ypos = (HopscotchGUI.getTileSide() * row);
     }
-
 
     public int getRow() {
         return row;
@@ -23,6 +22,7 @@ public class HopscotchTile {
 
     public void setRow(int row) {
         this.row = row;
+        this.setYpos(row * HopscotchGUI.getTileSide());
     }
 
     public int getCol() {
@@ -31,6 +31,7 @@ public class HopscotchTile {
 
     public void setCol(int col) {
         this.col = col;
+        this.setXpos(col * HopscotchGUI.getTileSide());
     }
 
 
@@ -38,9 +39,9 @@ public class HopscotchTile {
         return num;
     }
 
-    public void setNum(String num) {
+    /*public void setNum(String num) {
         this.num = num;
-    }
+    }*/
 
     public int getXpos() {
         return xpos;
