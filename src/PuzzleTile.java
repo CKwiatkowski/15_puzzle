@@ -1,6 +1,6 @@
 
 
-public class HopscotchTile {
+public class PuzzleTile {
 
     private int row;
     private int col;
@@ -8,12 +8,12 @@ public class HopscotchTile {
     private int xpos;
     private int ypos;
 
-    HopscotchTile(String num, int row, int col) {
+    PuzzleTile(String num, int row, int col) {
         this.num = num;
         this.row = row;
         this.col = col;
-        this.xpos = (HopscotchGUI.getTileSide() * col);
-        this.ypos = (HopscotchGUI.getTileSide() * row);
+        this.xpos = (PuzzleGUI.getTileSide() * col);
+        this.ypos = (PuzzleGUI.getTileSide() * row);
     }
 
     public int getRow() {
@@ -22,7 +22,7 @@ public class HopscotchTile {
 
     public void setRow(int row) {
         this.row = row;
-        this.setYpos(row * HopscotchGUI.getTileSide());
+        this.setYpos(row * PuzzleGUI.getTileSide());
     }
 
     public int getCol() {
@@ -31,7 +31,7 @@ public class HopscotchTile {
 
     public void setCol(int col) {
         this.col = col;
-        this.setXpos(col * HopscotchGUI.getTileSide());
+        this.setXpos(col * PuzzleGUI.getTileSide());
     }
 
 

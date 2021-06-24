@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.ArrayList;
 import static java.awt.Color.WHITE;
 
-public final class HopscotchGUI extends JPanel implements MouseListener {
+public final class PuzzleGUI extends JPanel implements MouseListener {
 
     private static final Color DARK_BLUE = new Color(9, 90, 166);
     private static final int tileSide = 70;
@@ -28,12 +28,12 @@ public final class HopscotchGUI extends JPanel implements MouseListener {
         return tileSide;
     }
 
-    private ArrayList<HopscotchTile> tiles = initializeTiles();
+    private ArrayList<PuzzleTile> tiles = initializeTiles();
 
-    private HopscotchTile blankTile = tiles.get(15);
+    private PuzzleTile blankTile = tiles.get(15);
 
-    HopscotchGUI() {
-        JFrame myframe = new JFrame("Hopscotch");
+    PuzzleGUI() {
+        JFrame myframe = new JFrame("Puzzle");
         myframe.setSize(frameWidth, frameHeight);
         myframe.setLocationRelativeTo(null);
         myframe.setVisible(true);
@@ -42,14 +42,14 @@ public final class HopscotchGUI extends JPanel implements MouseListener {
         myframe.add(this);
     }
 
-    private static ArrayList<HopscotchTile> initializeTiles() {
-        ArrayList<HopscotchTile> tiles = new ArrayList<HopscotchTile>();
+    private static ArrayList<PuzzleTile> initializeTiles() {
+        ArrayList<PuzzleTile> tiles = new ArrayList<PuzzleTile>();
         ArrayList<String> tileNumbers = new ArrayList<String>(
                 Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"));
         Collections.shuffle(tileNumbers);
         tileNumbers.add("0");
         for (String s : tileNumbers)
-            tiles.add(new HopscotchTile(s, tileNumbers.indexOf(s) / 4, tileNumbers.indexOf(s) % 4));
+            tiles.add(new PuzzleTile(s, tileNumbers.indexOf(s) / 4, tileNumbers.indexOf(s) % 4));
         return tiles;
     }
 
@@ -112,7 +112,7 @@ public final class HopscotchGUI extends JPanel implements MouseListener {
 
     //change tiles in list, then move them on screen
     private void moveTiles(char direction) {
-        HopscotchTile tile;
+        PuzzleTile tile;
         switch (direction) {
             case 'd':
                 for (int i = tiles.size() - 1; i >= 0; --i) {
@@ -129,7 +129,7 @@ public final class HopscotchGUI extends JPanel implements MouseListener {
                 }
                 break;
             case 'u':
-                for (int i = tiles.size() - 1; i >= 0; --i) {
+                for (int i = 0; i <= 15; i++) {
                     tile = tiles.get(i);
                     blankCheck(tile);
                     if (tile.getRow() <= oldRow && tile.getRow() > blankTile.getRow() && tile.getCol() == blankTile.getCol()) {
@@ -141,7 +141,8 @@ public final class HopscotchGUI extends JPanel implements MouseListener {
                 }
                 break;
             case 'l':
-                for (int i = tiles.size() - 1; i >= 0; --i) {
+                for (int i = 0; i <= 15; i++) {
+                    //for (int i = tiles.size() - 1; i >= 0; --i) {
                     tile = tiles.get(i);
                     blankCheck(tile);
                     if (tile.getCol() <= oldCol && tile.getCol() > blankTile.getCol() && tile.getRow() == blankTile.getRow()) {
@@ -155,9 +156,7 @@ public final class HopscotchGUI extends JPanel implements MouseListener {
                 break;
             case 'r':
                 for (int i = tiles.size() - 1; i >= 0; --i) {
-                    //temporary variable
                     tile = tiles.get(i);
-                    //update blank Tile if necessary
                     blankCheck(tile);
                     if (tile.getCol() >= oldCol && tile.getCol() < blankTile.getCol() && tile.getRow() == blankTile.getRow()) {
                         int tempCol = tile.getCol();
@@ -175,7 +174,7 @@ public final class HopscotchGUI extends JPanel implements MouseListener {
     }
 
 
-    private void blankCheck(HopscotchTile t) {
+    private void blankCheck(PuzzleTile t) {
         if (t.getNum().equals("0")) {
             blankTile = t;
             blankTile.setRow(t.getRow());
@@ -193,11 +192,9 @@ public final class HopscotchGUI extends JPanel implements MouseListener {
         mydraw.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
 
-        for (HopscotchTile t : tiles) {
+        for (PuzzleTile t : tiles) {
             mydraw.setColor(DARK_BLUE);
-            System.out.printf("Tile %s in row %d with pos %d/%d\n", t.getNum(), t.getRow(), t.getXpos(), t.getYpos());
             if (t.getNum().equals("0")) {
-                //blankTile = t;
                 continue;
             }
             mydraw.fillRect(t.getXpos(), t.getYpos(), tileSide, tileSide);
@@ -213,6 +210,10 @@ public final class HopscotchGUI extends JPanel implements MouseListener {
             int y = t.getYpos() + (tileSide - (int) r.getHeight()) / 2 + fm.getAscent();
             g.drawString(t.getNum(), x, y);
         }
+    }
+
+    public static void main(final String[] args) {
+        new PuzzleGUI();
     }
 
 }
